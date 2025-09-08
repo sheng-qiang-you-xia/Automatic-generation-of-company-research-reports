@@ -45,50 +45,191 @@ financial_research_report_main/
 
 ## 系统架构
 
+### 整体架构图
+
 ```mermaid
-graph TB
-  subgraph 数据输入层
-    A[股票/公司标的] --> B[utils 数据采集]
-    B --> C[财务三大报表]
-    B --> D[股东/股权信息]
-    B --> E[行业/新闻/网页]
-    B --> F[公司基础信息]
-  end
+flowchart TD
+    subgraph "数据源层"
+        A1[东方财富财报API]
+        A2[同花顺股东信息]
+        A3[同花顺公司信息]
+        A4[百度搜索引擎]
+        A5[akshare数据接口]
+    end
 
-  subgraph 核心处理层
-    C --> G[data_analysis_agent 智能体]
-    D --> G
-    E --> G
-    F --> G
-    G --> H[财务分析]
-    G --> I[图表生成]
-    G --> J[估值与预测]
-  end
+    subgraph "数据采集层"
+        B1[财务报表采集器]
+        B2[股权信息爬虫]
+        B3[公司信息获取器]
+        B4[行业信息搜索器]
+        B5[竞争对手识别器]
+    end
 
-  subgraph 工作流引擎
-    K[行业研究流程] --> L[决策节点]
-    M[宏观经济流程] --> L
-    L --> N[信息搜索]
-    L --> O[内容生成]
-  end
+    subgraph "数据存储层"
+        C1[CSV财务数据]
+        C2[JSON搜索结果]
+        C3[TXT公司信息]
+        C4[图片资源]
+    end
 
-  subgraph 报告生成层
-    H --> P[基础研报生成器]
-    I --> P
-    J --> P
-    N --> Q[整合式研报生成器]
-    O --> Q
-    P --> R[深度研报生成器]
-    Q --> R
-    R --> S[最终研报输出]
-  end
+    subgraph "AI分析层"
+        D1[数据分析智能体]
+        D2[LLM大模型]
+        D3[代码生成器]
+        D4[图表生成器]
+    end
 
-  subgraph 输出格式
-    S --> T[Markdown]
-    S --> U[Word Docx]
-    S --> V[图表 PNG]
-    S --> W[投资建议]
-  end
+    subgraph "工作流引擎"
+        E1[PocketFlow引擎]
+        E2[行业研究流程]
+        E3[宏观研究流程]
+        E4[决策节点]
+    end
+
+    subgraph "报告生成层"
+        F1[基础研报生成器]
+        F2[整合式研报生成器]
+        F3[深度研报生成器]
+        F4[报告格式化器]
+    end
+
+    subgraph "输出层"
+        G1[Markdown报告]
+        G2[Word文档]
+        G3[可视化图表]
+        G4[投资建议]
+    end
+
+    A1 --> B1
+    A2 --> B2
+    A3 --> B3
+    A4 --> B4
+    A5 --> B1
+
+    B1 --> C1
+    B2 --> C2
+    B3 --> C3
+    B4 --> C2
+    B5 --> C2
+
+    C1 --> D1
+    C2 --> D1
+    C3 --> D1
+    C4 --> D4
+
+    D1 --> D2
+    D2 --> D3
+    D3 --> D4
+
+    E1 --> E2
+    E1 --> E3
+    E2 --> E4
+    E3 --> E4
+
+    D1 --> F1
+    D4 --> F1
+    E4 --> F2
+    F1 --> F3
+    F2 --> F3
+    F3 --> F4
+
+    F4 --> G1
+    F4 --> G2
+    F4 --> G3
+    F4 --> G4
+```
+
+### 核心工作流程
+
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant M as 主程序
+    participant D as 数据采集
+    participant A as AI分析
+    participant W as 工作流引擎
+    participant R as 报告生成
+
+    U->>M: 启动研报生成
+    M->>D: 采集财务数据
+    M->>D: 获取公司信息
+    M->>D: 搜索行业信息
+    D-->>M: 返回原始数据
+
+    M->>A: 财务数据分析
+    A->>A: 生成分析代码
+    A->>A: 执行并生成图表
+    A-->>M: 返回分析结果
+
+    M->>W: 启动工作流
+    W->>W: 信息搜索节点
+    W->>W: 决策制定节点
+    W->>W: 内容生成节点
+    W-->>M: 返回工作流结果
+
+    M->>R: 生成基础报告
+    R->>R: 整合所有数据
+    R->>R: 生成深度分析
+    R-->>M: 返回最终报告
+
+    M-->>U: 输出研报文件
+```
+
+### 技术栈架构
+
+```mermaid
+graph LR
+    subgraph "前端展示"
+        A1[Markdown渲染]
+        A2[图表展示]
+        A3[Word文档]
+    end
+
+    subgraph "业务逻辑层"
+        B1[研报生成器]
+        B2[数据分析智能体]
+        B3[工作流引擎]
+    end
+
+    subgraph "AI服务层"
+        C1[OpenAI GPT-4]
+        C2[代码执行器]
+        C3[图表生成器]
+    end
+
+    subgraph "数据处理层"
+        D1[Pandas数据处理]
+        D2[Matplotlib绘图]
+        D3[BeautifulSoup解析]
+    end
+
+    subgraph "数据源层"
+        E1[akshare金融数据]
+        E2[同花顺网页]
+        E3[东方财富API]
+        E4[百度搜索]
+    end
+
+    A1 --> B1
+    A2 --> B1
+    A3 --> B1
+
+    B1 --> B2
+    B1 --> B3
+
+    B2 --> C1
+    B2 --> C2
+    B3 --> C1
+
+    C1 --> D1
+    C2 --> D1
+    C3 --> D2
+
+    D1 --> E1
+    D2 --> E1
+    D3 --> E2
+    D3 --> E3
+    D3 --> E4
 ```
 
 ---
